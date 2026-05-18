@@ -2330,7 +2330,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
     "@vscode/vsce": "^3.9.1",
-    "eslint": "^10.3.0",
+    "eslint": "^10.4.0",
     "jest": "^30.3.0",
     "ts-jest": "^29.4.9",
     "typescript": "^6.0.3"
