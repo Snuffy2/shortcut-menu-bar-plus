@@ -15,11 +15,13 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.event.repository.default_branch }}
 
       - name: Update Changelog
         if: ${{ github.event_name == 'release' && github.event.release.draft == false && github.event.release.prerelease == false  }}
@@ -27,7 +29,7 @@ jobs:
         with:
           file: CHANGELOG.md
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          commit: false
+          commit: true
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -66,15 +68,21 @@ jobs:
       - name: Set extension version
         run: npm pkg set version="${{ steps.version.outputs.value }}"
 
-      - name: Publish to Open VSX
-        id: publish_openvsx
-        uses: HaaLeo/publish-vscode-extension@v2
-        with:
-          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      - name: Package extension
+        id: package_extension
+        run: |
+          set -euo pipefail
+
+          VSIX_PATH="shortcut-menu-bar-plus-${{ steps.version.outputs.value }}.vsix"
+          npx --no-install vsce package --out "$VSIX_PATH"
+          echo "vsix_path=$VSIX_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Publish to VSCode Marketplace
-        uses: HaaLeo/publish-vscode-extension@v2
-        with:
-          pat: ${{ secrets.VSCE_PAT }}
-          registryUrl: https://marketplace.visualstudio.com
-          extensionFile: ${{ steps.publish_openvsx.outputs.vsixPath }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx --no-install vsce publish --packagePath "${{ steps.package_extension.outputs.vsix_path }}"
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OPEN_VSX_TOKEN }}
+        run: npx --no-install ovsx publish "${{ steps.package_extension.outputs.vsix_path }}"
