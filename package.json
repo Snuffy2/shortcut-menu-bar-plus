@@ -2329,7 +2329,7 @@
     "@types/vscode": "^1.120.0",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.59.3",
-    "@vscode/vsce": "^3.9.1",
+    "@vscode/vsce": "^3.9.2",
     "eslint": "^10.5.0",
     "jest": "^30.3.0",
     "ovsx": "^1.1.0",
