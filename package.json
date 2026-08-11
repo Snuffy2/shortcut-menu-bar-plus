@@ -2334,7 +2334,7 @@
     "jest": "^30.3.0",
     "ovsx": "^1.1.0",
     "ts-jest": "^29.4.11",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "overrides": {
     "glob": "13.0.6"
