@@ -2337,9 +2337,9 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
-    "glob": "13.0.6",
-    "brace-expansion": "5.0.12",
-    "qs": "6.16.0"
+    "glob": ">=13.0.6",
+    "brace-expansion": ">=5.0.12",
+    "qs": ">=6.16.0"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.45"
