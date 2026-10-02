@@ -12,8 +12,7 @@ on:
         type: string
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: release-please
@@ -90,7 +89,7 @@ jobs:
       - name: Publish to VSCode Marketplace
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx --no-install vsce publish --packagePath "${{ steps.package_extension.outputs.vsix_path }}"
+        run: npx --no-install vsce publish --skip-duplicate --packagePath "${{ steps.package_extension.outputs.vsix_path }}"
 
       - name: Publish to Open VSX
         env:
