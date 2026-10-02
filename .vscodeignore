@@ -5,7 +5,6 @@ src/**
 .gitignore
 AGENTS.md
 MEMORY.md
-docs/superpowers/**
 *.vsix
 .yarnrc
 vsc-extension-quickstart.md
