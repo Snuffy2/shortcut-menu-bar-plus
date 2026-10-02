@@ -16,3 +16,9 @@ prek.toml
 .github/**
 release-please-config.json
 .release-please-manifest.json
+.continuity
+.continuity/**
+.neuralmind
+.neuralmind/**
+graphify-out
+graphify-out/**

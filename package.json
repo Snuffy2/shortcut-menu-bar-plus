@@ -2326,7 +2326,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.2",
-    "@types/vscode": "^1.138.0",
+    "@types/vscode": "~1.118.0",
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
     "@vscode/vsce": "^4.0.0",
@@ -2337,7 +2337,9 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
-    "glob": "13.0.6"
+    "glob": ">=13.0.6",
+    "brace-expansion": ">=5.0.12",
+    "qs": ">=6.16.0"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.45"

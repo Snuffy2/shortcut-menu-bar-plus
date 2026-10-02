@@ -53,6 +53,8 @@ This is a Node/TypeScript extension repository.
 ## VS Code Extension Conventions
 
 - Preserve compatibility with the declared VS Code engine in `package.json`.
+- Keep `@types/vscode` on the same minor version as the minimum `engines.vscode` version, using a `~` range to allow patch updates.
+- When changing either version, run `npm run compile` and `npm run package` to verify API compatibility and packaging.
 - Keep `package.json` contributions, registered commands, and implementation code in sync.
 - Prefer small, explicit extension-host logic; avoid unnecessary abstractions in `src/extension.ts` unless complexity justifies it.
 - When adding commands, verify command IDs, titles, icons, menus, configuration, and activation behavior all line up.
