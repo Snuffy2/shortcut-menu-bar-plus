@@ -1,44 +1,10 @@
 ### Setup (one time)
 
-- `npm install`
-- Install [prek](https://prek.j178.dev/installation/) (on macOS: `brew install prek`).
-- Run `prek install` to enable the Git pre-commit hooks for this checkout.
-
-### Local checks and automated maintenance
-
-Run `prek run --all-files` to check the whole repository. Hooks validate JSON,
-YAML, TOML, GitHub Actions, whitespace, and file sizes, then apply ESLint fixes to
-`src/` and compile the extension with the existing npm toolchain. Markdown
-whitespace is preserved for intentional line breaks; packaged images are exempt
-from newline normalization and the large-file limit. VS Code and TypeScript
-JSON-with-comments configuration is excluded from strict JSON validation. Install npm dependencies before running hooks.
-Continue to run `npm test` for the Jest suites.
-
-The workflows are adapted from the local `prek-autoupdate` repository:
-
-- `prek_autoupdate.yml` runs daily, updates hook versions on Sundays, and cleans
-  up obsolete update PRs on pushes to `main`. It uses
-  `Snuffy2/prek-autoupdate@v2` with auto-merge enabled.
-- `prek-autofix-review.yml` runs the hooks on PRs with read-only permissions and
-  uploads fixes. `prek-autofix-fix.yml` applies those fixes from the trusted
-  default-branch workflow without checking out PR code. Both use
-  `Snuffy2/prek-autofix@v1`.
-
-Configure the Actions secrets `PREK_AUTOUPDATE_TOKEN` and `PREK_AUTOFIX_TOKEN`
-with dedicated automation credentials before relying on automated maintenance.
-For this public repository, classic PATs need `public_repo` and write access to
-the repository. The autoupdate token can alternatively be a fine-grained PAT
-with Contents and Pull requests read/write permissions. The autoupdate workflow
-expects the automation account `prek-autoupdate-bot` as its author fallback.
-Auto-merge also requires repository auto-merge support and branch rules that
-hold the update PR until required checks pass. See the
-[autoupdate setup](https://github.com/Snuffy2/prek-autoupdate#authentication-and-permissions)
-and [autofix setup](https://github.com/Snuffy2/prek-autofix) for credential details.
-
-Autofix can use `GITHUB_TOKEN` for same-repository PRs when its secret is absent;
-fixing fork branches requires the PAT and permission to edit the fork. The
-review action skips Dependabot and Renovate PRs by default. The scheduled and
-fix workflows become active once these files are on `main`.
+Install dependencies with `npm install`, install [prek](https://prek.j178.dev/installation/)
+(`brew install prek` on macOS), and run `prek install` to enable pre-commit hooks.
+Run `prek run --all-files` for repository checks and `npm test` for the Jest suites.
+GitHub Actions use prek-autoupdate to keep hooks current and prek-autofix to apply
+automatic fixes to pull requests.
 
 ### Run & Debug
 
