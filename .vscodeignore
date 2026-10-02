@@ -15,3 +15,5 @@ vsc-extension-quickstart.md
 **/*.ts
 prek.toml
 .github/**
+release-please-config.json
+.release-please-manifest.json

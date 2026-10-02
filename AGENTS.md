@@ -36,6 +36,7 @@ Use the repo's existing Node-based tooling unless the user explicitly asks to ch
 ## Workflow Expectations
 
 - Do not create branches, tags, releases, or PRs unless explicitly asked.
+- All PR titles must use a Conventional Commit prefix: `build:`, `chore:`, `ci:`, `deps:`, `docs:`, `feat:`, `fix:`, `perf:`, `refactor:`, `revert:`, `style:`, or `test:`. Optional scopes and breaking-change markers are supported, for example `feat(configurator): add a button` or `fix!: remove a legacy command`.
 - Prefer root-cause fixes over narrow patches.
 - Add or update tests for behavior changes.
 - Update docs when user-visible behavior, setup, or contributor workflow changes.

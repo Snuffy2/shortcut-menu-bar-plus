@@ -78,3 +78,18 @@ https://code.visualstudio.com/api/references/extension-manifest
 ## Development Notes
 
 - The Codicon enum in `package.json` is duplicated across every `ShortcutMenuBarPlus.userButtonXXIcon` setting. Keep those enum lists in sync whenever adding or removing supported Codicons.
+
+### Releases
+
+Use Conventional Commit PR titles such as `feat: add a button`, `fix: restore an icon`,
+or `ci: update a workflow`. The PR title lint enforces the supported prefixes.
+
+Release Please opens a release PR after changes land on `main`, updating
+`package.json`, `package-lock.json`, and `CHANGELOG.md`. Merging that PR creates
+a GitHub release and publishes the extension from its tagged source to the VS Code
+Marketplace and Open VSX. The release manifest starts at the current version, `3.2.0`.
+
+The workflow requires `RELEASE_PLEASE_TOKEN` with repository contents and pull-request
+write access, plus the existing `VSCE_PAT` and `OPEN_VSX_TOKEN` marketplace secrets.
+To retry publishing, manually run the Release Please workflow with an existing
+`vMAJOR.MINOR.PATCH` release tag. The tagged package version must match the release.
