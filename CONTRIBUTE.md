@@ -6,6 +6,10 @@ Run `prek run --all-files` for repository checks and `npm test` for the Jest sui
 GitHub Actions use prek-autoupdate to keep hooks current and prek-autofix to apply
 automatic fixes to pull requests.
 
+Keep `@types/vscode` on the same minor version as the minimum `engines.vscode`
+version, using a `~` range to allow patch updates. Compile and run `npm run package`
+when changing either version to verify API compatibility and packaging.
+
 ### Run & Debug
 
 - Press `F5` to open a new window with your extension loaded.
