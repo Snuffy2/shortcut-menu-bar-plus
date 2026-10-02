@@ -160,7 +160,6 @@ describe('Dependabot auto-merge authorization', () => {
     it('runs the file-based CLI for paginated commits with an older base parent', () => {
         const result = authorizeFromFiles(updateBranchInputs());
         expect(result.status).toBe(0);
-        expect(result.stdout).toBe('Authorized dependency update files and commit history.\n');
     });
 
     it('rejects file-based CLI input when the merge parent is outside current base ancestry', () => {

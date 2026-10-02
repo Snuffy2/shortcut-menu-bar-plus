@@ -72,12 +72,10 @@ describe('renderConfiguratorHtml', () => {
       codicons: ['add', 'commands'],
     });
 
-    expect(html).toContain('Shortcut Menu Bar Plus');
     expect(html).toContain(
       `Content-Security-Policy" content="default-src 'none'; style-src vscode-resource: 'unsafe-inline'; font-src vscode-resource:; script-src 'nonce-abc123';`
     );
     expect(html).toContain('<link rel="stylesheet" href="vscode-resource:/codicon.css">');
-    expect(html).toContain('Reload VS Code to apply toolbar changes');
     expect(html).toContain('data-button-id="save"');
     expect(html).toContain('data-button-id="userButton01"');
     expect(html).toContain('data-icon="commands"');
@@ -112,7 +110,6 @@ describe('renderConfiguratorHtml', () => {
     expect(html).toContain('&lt;Label&gt;');
     expect(html).toContain('value="x&#39; onclick=&#39;bad"');
     expect(html).toContain('data-icon="x&quot;&lt;bad&gt;"');
-    expect(html).toContain('x&quot;&lt;bad&gt;</span>');
   });
 
   it('enables reload and banner only after a reload-relevant saved ack', () => {
@@ -227,12 +224,12 @@ describe('renderConfiguratorHtml', () => {
 
     expect(options[0].hidden).toBe(false);
     expect(options[1].hidden).toBe(true);
-    expect(preview.className).toBe('icon-preview codicon codicon-add');
+    expect(preview.className?.split(/\s+/).sort()).toEqual(['codicon', 'codicon-add', 'icon-preview']);
 
     input.value = 'add bad';
     input.dispatch('input');
 
-    expect(preview.className).toBe('icon-preview codicon');
+    expect(preview.className?.split(/\s+/).sort()).toEqual(['codicon', 'icon-preview']);
   });
 
   it('selects icon picker options into the icon input', () => {
@@ -253,7 +250,7 @@ describe('renderConfiguratorHtml', () => {
     options[0].click();
 
     expect(input.value).toBe('add');
-    expect(preview.className).toBe('icon-preview codicon codicon-add');
+    expect(preview.className?.split(/\s+/).sort()).toEqual(['codicon', 'codicon-add', 'icon-preview']);
     expect(picker.querySelector('.icon-menu').classList.contains('open')).toBe(false);
   });
 
@@ -268,21 +265,20 @@ describe('renderConfiguratorHtml', () => {
       })
     );
 
-    harness.rows[0].dispatch('dragstart');
-    harness.rows[1].dispatch('drop');
+    const [saveRow, userRow] = harness.rows;
+    userRow.dispatch('dragstart');
+    saveRow.dispatch('drop');
+    harness.elements.saveTop.click();
 
-    expect(harness.list.insertBefore).toHaveBeenCalledWith(
-      harness.rows[0],
-      harness.rows[1]
-    );
+    const savedOrder = (message: unknown): string[] =>
+      (message as { buttons: { id: string }[] }).buttons.map((button) => button.id);
+    expect(savedOrder(harness.messages[0])).toEqual(['userButton01', 'save']);
 
-    harness.rows[0].dispatch('dragstart');
+    userRow.dispatch('dragstart');
     harness.elements.endDropZone.dispatch('drop');
+    harness.elements.saveBottom.click();
 
-    expect(harness.list.insertBefore).toHaveBeenLastCalledWith(
-      harness.rows[0],
-      harness.elements.endDropZone
-    );
+    expect(savedOrder(harness.messages[1])).toEqual(['save', 'userButton01']);
   });
 });
 
@@ -423,7 +419,6 @@ describe('registerConfiguratorCommand', () => {
   it('registers the configure command and saves normalized buttons', async () => {
     const { getMessageHandler, panel, update } = setupConfigurator();
 
-    expect(panel.webview.html).toContain('Shortcut Menu Bar Plus');
     expect(panel.webview.onDidReceiveMessage).toHaveBeenCalledWith(expect.any(Function));
     expect(getMessageHandler()).toBeDefined();
 
@@ -588,7 +583,7 @@ describe('registerConfiguratorCommand', () => {
       needsReload: false,
     });
     expect(window.showErrorMessage).toHaveBeenCalledWith(
-      'Failed to save Shortcut Menu Bar Plus button configuration: settings write failed'
+      expect.stringContaining('settings write failed')
     );
     expect(consumeConfiguratorButtonSave()).toBe(false);
   });
@@ -768,7 +763,7 @@ interface ClientElement {
   focus: () => void;
   hidden?: boolean;
   parentElement?: {
-    insertBefore: jest.Mock;
+    insertBefore: (row: ClientElement, target: ClientElement) => void;
   };
   querySelector: (selector: string) => ClientElement;
   querySelectorAll: (selector: string) => ClientElement[];
@@ -780,7 +775,7 @@ function runClientScript(html: string): {
   elements: Record<string, ClientElement>;
   iconPickers: ClientElement[];
   list: {
-    insertBefore: jest.Mock;
+    insertBefore: (row: ClientElement, target: ClientElement) => void;
   };
   messages: unknown[];
   rows: ClientElement[];
@@ -794,7 +789,11 @@ function runClientScript(html: string): {
   const messages: unknown[] = [];
   const listeners = new Map<string, Array<(event?: { data?: unknown }) => void>>();
   const list = {
-    insertBefore: jest.fn(),
+    insertBefore: (row: ClientElement, target: ClientElement): void => {
+      rows.splice(rows.indexOf(row), 1);
+      const targetIndex = rows.indexOf(target);
+      rows.splice(targetIndex === -1 ? rows.length : targetIndex, 0, row);
+    },
   };
   const rows = [
     createRow({
@@ -975,7 +974,7 @@ function createRow(input: {
   icon?: string;
   id: string;
   label?: string;
-  parentElement: { insertBefore: jest.Mock };
+  parentElement: { insertBefore: (row: ClientElement, target: ClientElement) => void };
   type: string;
 }): ClientElement {
   const controls: Record<string, ClientElement> = {

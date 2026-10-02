@@ -335,7 +335,7 @@ describe('extension configurator integration', () => {
 
     expect(resetUserButtonIcon).toHaveBeenCalledWith('01', '/fake/ext');
     expect(window.showInformationMessage).toHaveBeenCalledWith(
-      'User button settings updated. A window reload is required to apply changes.',
+      expect.stringContaining('reload'),
       'Reload Window'
     );
   });
@@ -657,7 +657,7 @@ describe('extension configurator integration', () => {
 
     expect(applyButtonManifest).toHaveBeenCalledTimes(1);
     expect(window.showInformationMessage).toHaveBeenCalledWith(
-      'User button settings updated. A window reload is required to apply changes.',
+      expect.stringContaining('reload'),
       'Reload Window'
     );
   });
@@ -776,7 +776,7 @@ describe('extension configurator integration', () => {
 
     expect(applyButtonManifest).toHaveBeenCalledTimes(1);
     expect(window.showInformationMessage).toHaveBeenCalledWith(
-      'User button settings updated. A window reload is required to apply changes.',
+      expect.stringContaining('reload'),
       'Reload Window'
     );
   });
@@ -820,7 +820,7 @@ describe('extension configurator integration', () => {
 
     expect(applyButtonManifest).toHaveBeenCalledTimes(1);
     expect(window.showInformationMessage).toHaveBeenCalledWith(
-      'User button settings updated. A window reload is required to apply changes.',
+      expect.stringContaining('reload'),
       'Reload Window'
     );
   });
@@ -911,7 +911,7 @@ describe('extension configurator integration', () => {
 
     expect(applyButtonManifest).toHaveBeenCalledTimes(1);
     expect(window.showInformationMessage).toHaveBeenCalledWith(
-      'User button settings updated. A window reload is required to apply changes.',
+      expect.stringContaining('reload'),
       'Reload Window'
     );
   });

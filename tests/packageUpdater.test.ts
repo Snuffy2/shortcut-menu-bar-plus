@@ -47,18 +47,9 @@ describe('applyUserButtonName', () => {
     expect(result).toBe(true);
   });
 
-  it('resets to default title when name is null', () => {
+  it.each([null, ''])('resets to default title when name is %j', (name) => {
     (mockFs.readFileSync as jest.Mock).mockReturnValue(makePkg('My Button'));
-    applyUserButtonName('01', null, extensionPath);
-    const written = JSON.parse(
-      (mockFs.writeFileSync as jest.Mock).mock.calls[0][1] as string
-    );
-    expect(written.contributes.commands[0].title).toBe('user action 1');
-  });
-
-  it('resets to default title when name is empty string', () => {
-    (mockFs.readFileSync as jest.Mock).mockReturnValue(makePkg('My Button'));
-    applyUserButtonName('01', '', extensionPath);
+    applyUserButtonName('01', name, extensionPath);
     const written = JSON.parse(
       (mockFs.writeFileSync as jest.Mock).mock.calls[0][1] as string
     );
