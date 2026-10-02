@@ -1,0 +1,59 @@
+# Configuration file for `prek`, a git hook framework written in Rust.
+# See https://prek.j178.dev for more information.
+#:schema https://www.schemastore.org/prek.json
+
+[[repos]]
+repo = "https://github.com/pre-commit/pre-commit-hooks"
+rev = "v6.0.0"
+
+[[repos.hooks]]
+id = "trailing-whitespace"
+exclude = ".*\\.md$"
+
+[[repos.hooks]]
+id = "end-of-file-fixer"
+exclude = "(^images/|.*\\.md$)"
+
+[[repos.hooks]]
+id = "check-yaml"
+
+[[repos.hooks]]
+id = "check-toml"
+
+[[repos.hooks]]
+id = "check-json"
+# VS Code and TypeScript configuration uses JSON with comments.
+exclude = "^(\\.vscode/.*\\.json|tsconfig.*\\.json)$"
+
+[[repos.hooks]]
+id = "check-added-large-files"
+exclude = "^images/"
+
+[[repos]]
+repo = "https://github.com/rhysd/actionlint"
+rev = "v1.7.12"
+
+[[repos.hooks]]
+id = "actionlint"
+additional_dependencies = [
+  "github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1",
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "eslint"
+name = "eslint --fix"
+entry = "npm exec --no -- eslint --fix"
+language = "system"
+files = "^src/.*\\.ts$"
+types = ["ts"]
+
+[[repos.hooks]]
+id = "typescript"
+name = "Compile extension"
+entry = "npm run compile"
+language = "system"
+files = "^(src/.*\\.ts|package(-lock)?\\.json|tsconfig\\.json)$"
+pass_filenames = false

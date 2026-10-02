@@ -1,6 +1,10 @@
 ### Setup (one time)
 
-- npm install
+Install dependencies with `npm install`, install [prek](https://prek.j178.dev/installation/)
+(`brew install prek` on macOS), and run `prek install` to enable pre-commit hooks.
+Run `prek run --all-files` for repository checks and `npm test` for the Jest suites.
+GitHub Actions use prek-autoupdate to keep hooks current and prek-autofix to apply
+automatic fixes to pull requests.
 
 ### Run & Debug
 
