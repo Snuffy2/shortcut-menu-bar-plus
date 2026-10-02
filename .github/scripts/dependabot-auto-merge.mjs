@@ -137,11 +137,8 @@ function assertUpdateBranchHistory(event, commits, ancestryProofs) {
 
   assertMergeParentAncestry(event, commits, ancestryProofs);
   const latest = commits.at(-1);
-  if (
-    latest?.sha !== event.pull_request.head.sha ||
-    latest.parents[1]?.sha !== event.pull_request.base.sha
-  )
-    refuse("the latest commit is not an update from the current base branch.");
+  if (latest?.sha !== event.pull_request.head.sha)
+    refuse("the latest commit is not the pull request head.");
 }
 
 /**

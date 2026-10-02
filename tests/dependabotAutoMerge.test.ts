@@ -1,11 +1,15 @@
 import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolve } from 'node:path';
 
 const baseSha = '1'.repeat(40);
 const headSha = '2'.repeat(40);
+const olderBaseSha = '4'.repeat(40);
 const repository = 'Snuffy2/shortcut-menu-bar-plus';
-const helperUrl = pathToFileURL(resolve('.github/scripts/dependabot-auto-merge.mjs')).href;
+const helperPath = resolve('.github/scripts/dependabot-auto-merge.mjs');
+const helperUrl = pathToFileURL(helperPath).href;
 
 const defaultInput = {
     event: {
@@ -37,6 +41,46 @@ function authorize(input: ReturnType<typeof inputs>): ReturnType<typeof spawnSyn
         import { authorizeDependabotUpdate } from ${JSON.stringify(helperUrl)};
         console.log(authorizeDependabotUpdate(JSON.parse(process.argv[1])));
     `, JSON.stringify(input)], { encoding: 'utf8' });
+}
+
+function authorizeFromFiles(input: ReturnType<typeof inputs>): ReturnType<typeof spawnSync> {
+    const fixtureDirectory = mkdtempSync(join(tmpdir(), 'dependabot-auto-merge-'));
+    try {
+        const eventPath = join(fixtureDirectory, 'event.json');
+        const changedFilesPath = join(fixtureDirectory, 'changed-files.txt');
+        const commitsPath = join(fixtureDirectory, 'commits.json');
+        const ancestryProofsPath = join(fixtureDirectory, 'ancestry-proofs.json');
+        writeFileSync(eventPath, JSON.stringify(input.event));
+        writeFileSync(changedFilesPath, input.changedFiles.join('\n'));
+        writeFileSync(commitsPath, JSON.stringify([input.commits.slice(0, 1), input.commits.slice(1)]));
+        writeFileSync(ancestryProofsPath, JSON.stringify(input.ancestryProofs));
+        return spawnSync(process.execPath, [helperPath, eventPath, changedFilesPath, commitsPath, ancestryProofsPath], { encoding: 'utf8' });
+    } finally {
+        rmSync(fixtureDirectory, { recursive: true, force: true });
+    }
+}
+
+function updateBranchInputs(): ReturnType<typeof inputs> {
+    const input = inputs();
+    const mergeSha = '3'.repeat(40);
+    input.event.pull_request.head.sha = mergeSha;
+    input.commits.push({
+        ...input.commits[0],
+        sha: mergeSha,
+        author: { login: 'maintainer' },
+        parents: [{ sha: headSha }, { sha: olderBaseSha }],
+    });
+    input.ancestryProofs = [{
+        parent_sha: olderBaseSha,
+        base_sha: baseSha,
+        base_commit: olderBaseSha,
+        head_commit: baseSha,
+        merge_base_commit: olderBaseSha,
+        status: 'ahead',
+        ahead_by: 3,
+        behind_by: 0,
+    }];
+    return input;
 }
 
 describe('Dependabot auto-merge authorization', () => {
@@ -96,5 +140,24 @@ describe('Dependabot auto-merge authorization', () => {
         const result = authorize(input);
         expect(result.status === 0).toBe(withProof);
         if (!withProof) expect(result.stderr).toContain('Refusing auto-merge');
+    });
+
+    it('runs the file-based CLI for paginated commits with an older base parent', () => {
+        const result = authorizeFromFiles(updateBranchInputs());
+        expect(result.status).toBe(0);
+        expect(result.stdout).toBe('Authorized dependency update files and commit history.\n');
+    });
+
+    it('rejects file-based CLI input when the merge parent is outside current base ancestry', () => {
+        const input = updateBranchInputs();
+        input.ancestryProofs[0] = {
+            ...input.ancestryProofs[0],
+            status: 'behind',
+            ahead_by: 0,
+            behind_by: 3,
+        };
+        const result = authorizeFromFiles(input);
+        expect(result.status).not.toBe(0);
+        expect(result.stderr).toContain('a merge second parent is not proven to be on the current base');
     });
 });
