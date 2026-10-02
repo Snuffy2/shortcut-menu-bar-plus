@@ -15,7 +15,7 @@
 - `src/packageUpdater.ts`: rewrites `package.json` command titles for user button display names
 - `tests/`: Jest coverage for the helper modules
 - `images/`: packaged extension icons, including generated user button SVG targets
-- `help.md`: contributor-oriented instructions for adding buttons
+- `CONTRIBUTE.md`: contributor-oriented instructions for adding buttons
 - `README.md`: marketplace-facing documentation
 - `.github/release.yml`: release note filtering configuration
 - `.vscodeignore`: packaging allow/deny list for `vsce`
@@ -28,6 +28,8 @@ Use the repo's existing Node-based tooling unless the user explicitly asks to ch
 - Compile: `npm run compile`
 - Watch: `npm run watch`
 - Test: `npm test`
+- CI tests: `npm test -- --ci --coverage`
+- Repository checks: `prek run --all-files`
 - Test watch: `npm run test:watch`
 - Lint: `npm run lint`
 - Build package: `npm run package`
@@ -36,10 +38,11 @@ Use the repo's existing Node-based tooling unless the user explicitly asks to ch
 ## Workflow Expectations
 
 - Do not create branches, tags, releases, or PRs unless explicitly asked.
+- All PR titles must use a Conventional Commit prefix: `build:`, `chore:`, `ci:`, `deps:`, `docs:`, `feat:`, `fix:`, `perf:`, `refactor:`, `revert:`, `style:`, or `test:`. Optional scopes and breaking-change markers are supported, for example `feat(configurator): add a button` or `fix!: remove a legacy command`.
 - Prefer root-cause fixes over narrow patches.
 - Add or update tests for behavior changes.
 - Update docs when user-visible behavior, setup, or contributor workflow changes.
-- Before claiming success on code changes, run the relevant validation commands and report what passed and what did not run.
+- Before committing or pushing changes, run `prek run --all-files`, `npm run compile`, `npm test -- --ci --coverage`, and `npm run lint`. Report what passed and any checks that could not run.
 
 ## Technology-Specific Overrides
 
@@ -62,7 +65,7 @@ When adding or changing a built-in button:
 - Register the command in `src/extension.ts`.
 - If it is a simple pass-through command, add it to the `commandArray`.
 - If it needs editor state or special handling, register it as a separate command like `beautify`, `formatWith`, or `openFilesList`.
-- Update `README.md` and `help.md` if contributor or user-facing behavior changes.
+- Update `README.md` and `CONTRIBUTE.md` if contributor or user-facing behavior changes.
 - Add or update tests if logic moves into helper modules.
 
 ## User Button Rules
@@ -118,15 +121,14 @@ The extension package excludes source and test material through `.vscodeignore`.
 - For logic changes in `src/iconGenerator.ts` or `src/packageUpdater.ts`, update Jest coverage in `tests/`.
 - Prefer focused unit tests around parsing, file-path generation, and failure handling.
 - If changing activation flow in `src/extension.ts`, add tests if practical; otherwise explain the validation gap and cover with manual reasoning.
-- Run at least the relevant compile/test commands for code changes.
+- Run the full prek and CI checks listed under Workflow Expectations before committing or pushing.
 
 ## Documentation Expectations
 
 Update these files when applicable:
 
 - `README.md`: user-visible features, settings, marketplace-facing guidance
-- `help.md`: contributor steps, especially for adding buttons or extending the manifest/menus
-- `MEMORY.md`: operational notes and durable findings
+- `CONTRIBUTE.md`: contributor steps, especially for adding buttons or extending the manifest/menus
 
 ## Existing Known Facts
 
@@ -138,6 +140,6 @@ Update these files when applicable:
 ## Practical Editing Guidance
 
 - Search with `rg` before changing command IDs or config keys.
-- Check for corresponding README/help text whenever you touch `package.json` contributions.
+- Check for corresponding README/CONTRIBUTE text whenever you touch `package.json` contributions.
 - Avoid reformatting large JSON or TypeScript sections unless needed for the task.
 - Do not revert unrelated dirty-worktree changes.

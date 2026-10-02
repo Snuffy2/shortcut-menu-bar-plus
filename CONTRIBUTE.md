@@ -78,3 +78,6 @@ https://code.visualstudio.com/api/references/extension-manifest
 ## Development Notes
 
 - The Codicon enum in `package.json` is duplicated across every `ShortcutMenuBarPlus.userButtonXXIcon` setting. Keep those enum lists in sync whenever adding or removing supported Codicons.
+
+PR titles must use a Conventional Commit prefix, such as `feat: add a button`,
+`fix: restore an icon`, or `ci: update a workflow`. The PR title lint enforces this requirement.
