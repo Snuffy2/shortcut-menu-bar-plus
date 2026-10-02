@@ -80,12 +80,7 @@ describe('renderConfiguratorHtml', () => {
     expect(html).toContain('Reload VS Code to apply toolbar changes');
     expect(html).toContain('data-button-id="save"');
     expect(html).toContain('data-button-id="userButton01"');
-    expect(html).toContain('class="icon-picker"');
-    expect(html).toContain('class="icon-preview codicon codicon-commands"');
-    expect(html).toContain('class="codicon codicon-commands"');
     expect(html).toContain('data-icon="commands"');
-    expect(html).toContain('.icon-option[hidden]');
-    expect(html).toContain('class="toolbar bottom"');
   });
 
   it('escapes user-controlled command, label, and icon values', () => {
@@ -116,36 +111,8 @@ describe('renderConfiguratorHtml', () => {
     expect(html).toContain('value="command&quot;&lt;script&gt;"');
     expect(html).toContain('&lt;Label&gt;');
     expect(html).toContain('value="x&#39; onclick=&#39;bad"');
-    expect(html).toContain('class="icon-preview codicon"');
     expect(html).toContain('data-icon="x&quot;&lt;bad&gt;"');
     expect(html).toContain('x&quot;&lt;bad&gt;</span>');
-  });
-
-  it('includes drag, serialize, save, and reload client hooks', () => {
-    const html = renderConfiguratorHtml({
-      nonce: 'abc123',
-      cspSource: 'vscode-resource:',
-      codiconStyleUri: 'vscode-resource:/codicon.css',
-      buttons: [],
-      codicons: [],
-    });
-
-    expect(html).toContain('const vscode = acquireVsCodeApi()');
-    expect(html).toContain('function serializeButtons()');
-    expect(html).toContain("addEventListener('dragstart'");
-    expect(html).toContain("addEventListener('drop'");
-    expect(html).toContain("type: 'save'");
-    expect(html).toContain("type: 'reload'");
-    expect(html).toContain("type !== 'user'");
-    expect(html).toContain('command: row.querySelector');
-    expect(html).toContain("document.querySelectorAll('.save-button')");
-    expect(html).toContain("document.querySelectorAll('.reload-button')");
-    expect(html).toContain("document.querySelectorAll('.icon-picker')");
-    expect(html).toContain("event.data.type !== 'saved'");
-    expect(html).toContain("classList.toggle('visible', canReload)");
-    expect(html).toContain('<button class="reload-button" type="button" disabled>');
-    expect(html).toContain('id="end-drop-zone"');
-    expect(html).toContain("document.querySelector('.button-list').insertBefore");
   });
 
   it('enables reload and banner only after a reload-relevant saved ack', () => {

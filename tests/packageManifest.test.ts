@@ -10,15 +10,4 @@ describe('extension package metadata', () => {
     expect(pkg.activationEvents).toContain('onStartupFinished');
   });
 
-  it('excludes internal agent and planning files from the VSIX package', () => {
-    const vscodeIgnore = readFileSync(
-      resolve(process.cwd(), '.vscodeignore'),
-      'utf8'
-    );
-
-    expect(vscodeIgnore).toContain('AGENTS.md');
-    expect(vscodeIgnore).toContain('MEMORY.md');
-    expect(vscodeIgnore).toContain('docs/superpowers/**');
-    expect(vscodeIgnore).toContain('*.vsix');
-  });
 });

@@ -182,7 +182,7 @@ describe('applyUserButtonIcon', () => {
     );
     expect(mockFs.writeFileSync).toHaveBeenCalledWith(
       path.join(extensionPath, 'images', 'userButton01.svg'),
-      expect.stringContaining('M376 512V0'),
+      expect.stringContaining('fill="#c5c5c5"'),
       'utf8'
     );
     expect(mockFs.writeFileSync).toHaveBeenCalledWith(
@@ -193,25 +193,16 @@ describe('applyUserButtonIcon', () => {
   });
 
   it('does not rewrite a user icon file that is already current', () => {
-    const currentDefault =
-      '<svg height="16" width="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">\n' +
-      '    <path\n' +
-      '        d="M376 512V0h-99.902l-3.56 9.932c-9.419 26.294-27.202 49.746-52.837 69.697-26.528 20.684-51.211 34.849-73.359 42.1L136 125.112v114.771l19.702-6.519c36.387-12.012 69.448-29.268 98.672-51.445V512z"\n' +
-      '        fill="#c5c5c5" />\n' +
-      '</svg>\n';
-    (mockFs.readFileSync as jest.Mock).mockReturnValue(currentDefault);
-
     resetUserButtonIcon('01', extensionPath);
+    const generatedFiles = new Map<string, string>(
+      mockFs.writeFileSync.mock.calls.map(([filePath, content]) => [
+        String(filePath), String(content),
+      ])
+    );
+    mockFs.writeFileSync.mockClear();
+    mockFs.readFileSync.mockImplementation((filePath) => generatedFiles.get(String(filePath)) ?? '');
 
-    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
-      path.join(extensionPath, 'images', 'userButton01_light.svg'),
-      expect.any(String),
-      'utf8'
-    );
-    expect(mockFs.writeFileSync).not.toHaveBeenCalledWith(
-      path.join(extensionPath, 'images', 'userButton01.svg'),
-      expect.any(String),
-      'utf8'
-    );
+    expect(resetUserButtonIcon('01', extensionPath)).toBe(true);
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled();
   });
 });

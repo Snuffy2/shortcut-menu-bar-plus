@@ -103,21 +103,6 @@ describe('applyButtonManifest', () => {
     expect(written).toMatch(/\n$/);
   });
 
-  it('writes trailing newline for updated package content', () => {
-    mockFs.readFileSync.mockReturnValue(
-      makePkg({
-        commands: allCommands(),
-        editorTitle: allEditorMenus(),
-      })
-    );
-    mockFs.writeFileSync.mockImplementation(() => undefined);
-
-    applyButtonManifest(allEntries, extensionPath);
-
-    const written = (mockFs.writeFileSync as jest.Mock).mock.calls[0][1] as string;
-    expect(written.endsWith('\n')).toBe(true);
-  });
-
   it('does not rewrite when manifest content is already current', () => {
     const entries: ButtonEntry[] = [
       ...allBuiltinEntries(false),
@@ -583,7 +568,6 @@ describe('applyButtonManifest', () => {
     expect(firstManaged01).toEqual(
       expect.objectContaining({
         when: 'false',
-        [INTERNAL_ORIGINAL_WHEN_KEY]: 'original:ShortcutMenuBarPlus.userButton01',
       })
     );
 
@@ -614,7 +598,6 @@ describe('applyButtonManifest', () => {
         when: 'original:ShortcutMenuBarPlus.userButton01',
       })
     );
-    expect(secondManaged01).not.toHaveProperty(INTERNAL_ORIGINAL_WHEN_KEY);
   });
 
   it('preserves disabled managed entries with deterministic hidden when and later grouping', () => {

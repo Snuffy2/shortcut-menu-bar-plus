@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -11,7 +11,10 @@ const repository = 'Snuffy2/shortcut-menu-bar-plus';
 const helperPath = resolve('.github/scripts/dependabot-auto-merge.mjs');
 const helperUrl = pathToFileURL(helperPath).href;
 
+let trustedBaseDirectory: string;
+
 const defaultInput = {
+    trustedBaseDirectory: '',
     event: {
         repository: { default_branch: 'main', fork: false, full_name: repository },
         pull_request: {
@@ -32,7 +35,7 @@ const defaultInput = {
 };
 
 function inputs(): typeof defaultInput {
-    return structuredClone(defaultInput);
+    return { ...structuredClone(defaultInput), trustedBaseDirectory };
 }
 
 function authorize(input: ReturnType<typeof inputs>): ReturnType<typeof spawnSync> {
@@ -54,7 +57,7 @@ function authorizeFromFiles(input: ReturnType<typeof inputs>): ReturnType<typeof
         writeFileSync(changedFilesPath, input.changedFiles.join('\n'));
         writeFileSync(commitsPath, JSON.stringify([input.commits.slice(0, 1), input.commits.slice(1)]));
         writeFileSync(ancestryProofsPath, JSON.stringify(input.ancestryProofs));
-        return spawnSync(process.execPath, [helperPath, eventPath, changedFilesPath, commitsPath, ancestryProofsPath], { encoding: 'utf8' });
+        return spawnSync(process.execPath, [helperPath, eventPath, changedFilesPath, commitsPath, ancestryProofsPath], { encoding: 'utf8', cwd: trustedBaseDirectory });
     } finally {
         rmSync(fixtureDirectory, { recursive: true, force: true });
     }
@@ -84,6 +87,18 @@ function updateBranchInputs(): ReturnType<typeof inputs> {
 }
 
 describe('Dependabot auto-merge authorization', () => {
+    beforeEach(() => {
+        trustedBaseDirectory = mkdtempSync(join(tmpdir(), 'dependabot-trusted-base-'));
+        writeFileSync(join(trustedBaseDirectory, 'package.json'), '{}');
+        writeFileSync(join(trustedBaseDirectory, 'package-lock.json'), '{}');
+        mkdirSync(join(trustedBaseDirectory, '.github', 'workflows'), { recursive: true });
+        writeFileSync(join(trustedBaseDirectory, '.github', 'workflows', 'fixture.yml'), 'name: Fixture\n');
+    });
+
+    afterEach(() => {
+        rmSync(trustedBaseDirectory, { recursive: true, force: true });
+    });
+
     it.each([
         ['package-lock.json'],
         ['package.json', 'package-lock.json'],
@@ -98,7 +113,7 @@ describe('Dependabot auto-merge authorization', () => {
     it('allows an existing GitHub Actions workflow update', () => {
         const input = inputs();
         input.event.pull_request.head.ref = 'dependabot/github_actions/actions/checkout-7';
-        input.changedFiles = ['.github/workflows/publish-vscode-marketplace.yml'];
+        input.changedFiles = ['.github/workflows/fixture.yml'];
         const result = authorize(input);
         expect(result.status).toBe(0);
         expect(result.stdout).toBe('github-actions\n');
