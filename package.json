@@ -2,7 +2,7 @@
   "name": "shortcut-menu-bar-plus",
   "displayName": "Shortcut Menu Bar Plus",
   "description": "Add handy buttons like beautify, show opened files, save, toggle terminal, activity bar etc to editor menu bar. User-defined buttons are also possible.",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "publisher": "snuffy2",
   "author": {
     "name": "Snuffy2"

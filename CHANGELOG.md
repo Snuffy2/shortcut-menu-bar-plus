@@ -4,6 +4,24 @@ All notable changes to the "Shortcut-Menu-Bar" extension will be documented in t
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
+## [3.2.1](https://github.com/Snuffy2/shortcut-menu-bar-plus/compare/v3.2.0...v3.2.1) (2026-10-02)
+
+
+### Bug Fixes
+
+* secure dependencies and unblock extension packaging ([#131](https://github.com/Snuffy2/shortcut-menu-bar-plus/issues/131)) ([1433c8f](https://github.com/Snuffy2/shortcut-menu-bar-plus/commit/1433c8fb95eb6265c8dea1dbf28eec90d54dfeff))
+
+
+### Miscellaneous Chores
+
+* integrate prek hooks and automated maintenance ([#125](https://github.com/Snuffy2/shortcut-menu-bar-plus/issues/125)) ([d63c9b8](https://github.com/Snuffy2/shortcut-menu-bar-plus/commit/d63c9b86ddfdce69cfb788336db6ef55c7df231e))
+
+
+### Continuous Integration
+
+* adopt release-please and lint PR titles ([#130](https://github.com/Snuffy2/shortcut-menu-bar-plus/issues/130)) ([0b90da6](https://github.com/Snuffy2/shortcut-menu-bar-plus/commit/0b90da618d1a89fd3d273064f4804cefdc302bf8))
+* compile extension and run Jest on pull requests ([#129](https://github.com/Snuffy2/shortcut-menu-bar-plus/issues/129)) ([92da48e](https://github.com/Snuffy2/shortcut-menu-bar-plus/commit/92da48eec2102856422ae2eb404716b42bdaea5f))
+
 ## [3.0.3] - 2021-05-12
 
 - fixed icons not showing properly
